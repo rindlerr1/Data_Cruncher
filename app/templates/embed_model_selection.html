@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}I-COM{% endblock %}
+
+{% block page_content %}
+<h2>Welcome to the Model Section Module!</h2>
+<h3>Here you will find:</h3>
+<div>-All variables in your dataset, please select your independent variables and dependent variable</div>
+<div>-Select the type of model you would like to run</div>
+<div>-Select your parameter tuning method, please note grid search and random search kick-off background functions that may take some time to complete</div>
+<div>-An area to manually tune parameters if you have done work outside of Data Cruncher</div>
+<div>-And finally please freeze your selections which will either kick-off a tuning method or store your manual parameters</div>
+{{ script|safe }}
+{% endblock %}

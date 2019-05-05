@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}I-COM{% endblock %}
+
+{% block page_content %}
+<h2>Welcome to the Data Quality Assurance Module!</h2>
+<h3>Here you will find:</h3>
+<div>-Trended record counts to help identify any days where data collection may have failed</div>
+<div>-An assessment of the Categorical Variables in the data, using Chi-Square Test of Independence</div>
+<div>-An assessment of the Numeric Variables in the data, using Correlation Coefficients & an interactive Scatter Plot</div>
+<div>-A table of descriptive statistics to help further contextual the Numeric Data</div>
+{{ script|safe }}
+{% endblock %}

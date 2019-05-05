@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block page_content %}
+
+
+<div class="page-header">
+	<h1>Hello I-COM Welcome to Team Mindshare's Data Science Application: Data Cruncher</h1>
+</div>
+<h3>This is the first of several Modules that act as a productized Data Science solution</h3>
+<div>This module handles file ingestion</div>
+<div>-Please ensure files are organized in tables and are a 'csv' file type</div>
+
+<h3>Select CSV file to upload :)</h3>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul class=flashes>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+<div class="col-sm-2"> 
+<form action="{{ url_for('main.upload_file') }}" method="POST" enctype="multipart/form-data">
+    <dl>
+		<p>
+			<input type="file" name="file" multiple="true" autocomplete="off" required>
+		</p>
+    </dl>
+    <p>
+		<input type="submit" value="upload">
+	</p>
+</div>
+</form>
+
+{% endblock %}

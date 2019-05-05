@@ -1,0 +1,44 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}I-COM{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role-="navigation">
+	<div class="container">
+		<div class= "navbar-header">
+			<button type="button" class="navbar-toggle"
+			data-toggle="collapse" data-target=".navbar-collapse">
+			 	<span class="sr-only">Toggle navigation</span>
+			 	<span class="icon-bar"></span>
+			 	<span class="icon-bar"></span>
+			 	<span class="icon-bar"></span>
+			 </button>
+			 <a class="navbar-brand" href="/">I-COM</a>
+		</div>
+		<div class="navbar-collapse collapse">
+		<ul class = "nav navbar-nav navbar-right">
+			<li><a href="/dashboard">About</a></li>
+		</ul>
+	</div>
+</div>
+
+{% endblock %}	
+{% block sidebar %}
+<div class="sidebar">
+  <a href="#">Ingestion</a>
+  <a href="#">EDA - DQ/QA</a>
+  <a href="#">Model Selection</a>
+  <a href="#">Scenario Planning</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">	
+	{% block page_content %}{% endblock %}
+</div>
+{% endblock %}

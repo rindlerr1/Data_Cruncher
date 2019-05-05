@@ -1,0 +1,2 @@
+Dep_Vars,Ind_Vars,Model,Parameters,Tuning_Type
+PassengerId,"['PassengerId', 'Survived']",XGBoost,default-default-default-default-default,Manual
