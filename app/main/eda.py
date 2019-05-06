@@ -9,32 +9,85 @@ Created on Sat Apr 27 09:40:44 2019
 import pandas as pd
 import numpy as np
 from scipy.stats import chi2_contingency
+import time
 
 from bokeh.plotting import figure, curdoc
 from bokeh.models import ColumnDataSource
 from bokeh.models.widgets import DataTable, TableColumn, Paragraph, Select, PreText, Panel, Tabs
 from bokeh.layouts import row, column
 
+from tornado import gen
+from threading import Thread
+from functools import partial
 
-categorical_vars = []
-numeric_vars = []
-PATH = '/users/home/desktop/data_cruncher/app/Data/app_data.csv'
+main_path = '/users/home/desktop/projects/data_cruncher/app/Data/'
 
-df = pd.read_csv(PATH)
+df = pd.read_csv(main_path+'app_data.csv')
 
-
+target_file = pd.read_csv(main_path+'app_data_target_actual.csv')
 
 
-for i in range(0, len(df.columns)):
-    if (type(df[df.columns[i]][0]) == np.int64 or type(df[df.columns[i]][0]) == np.float64):
-        numeric_vars.append(df.columns[i])
-    elif type(df[df.columns[i]][0]) == str:
-        categorical_vars.append(df.columns[i])
+# this must only be modified from a Bokeh session callback
+source = ColumnDataSource(data=df.to_dict(orient='list'))
+
+# This is important! Save curdoc() to make sure all threads
+# see the same document.
+doc = curdoc()
+
+
+#create categorical variables
+def all_columns(df):
+    categorical_vars = []
+    numeric_vars = []
+    for i in range(0, len(df.columns)):
+        if (type(df[df.columns[i]][0]) == np.int64 or type(df[df.columns[i]][0]) == np.float64):
+            numeric_vars.append(df.columns[i])
+        elif type(df[df.columns[i]][0]) == str:
+            categorical_vars.append(df.columns[i])
+    return categorical_vars, numeric_vars
+
+categorical_vars, numeric_vars = all_columns(df)
+
+if target_file['Orig_Clean'][0] == 0:
+    categorical_vars, numeric_vars = all_columns(df)
+elif target_file['Orig_Clean'][0] == 1:
+    cat_table = pd.read_csv(main_path+'cats_defined.csv')
+    num_table = pd.read_csv(main_path+'nums_defined.csv')
+            
+    categorical_vars = [x for x in cat_table['Categorical_Variables']]
+    numeric_vars = [x for x in num_table['Numeric_Variables']] 
+
+@gen.coroutine
+def update(df):
+    source.stream(df.to_dict(orient='list'))
+
+def blocking_task():
+    while True:
+        # do some blocking computation
+        time.sleep(30)
+        
+        df = pd.read_csv(main_path+'app_data.csv')
+        categorical_vars = []
+        numeric_vars = []
+        
+        if target_file['Orig_Clean'][0] == 0:
+            categorical_vars, numeric_vars = all_columns(df)
+        elif target_file['Orig_Clean'][0] == 1:
+            
+            df = pd.read_csv(main_path+'app_data_clean.csv')
+
+        # but update the document from callback
+        doc.add_next_tick_callback(partial(update, df))
+        
+
+
+
 
 def datetime(x):
     return np.array(x, dtype=np.datetime64)
 
-def record_line(df):
+def record_line(source):
+    df = ColumnDataSource.to_df(source)
     table = df.groupby(['Date'])['Date'].count().rename('Record Counts').reset_index()
     sd = np.std(table['Record Counts'])
     mean = np.mean(table['Record Counts'])
@@ -78,8 +131,8 @@ def record_line(df):
 
 
 
-
-def describe_data(df, numeric_vars):
+def describe_data(source, numeric_vars):
+    df = ColumnDataSource.to_df(source)
     table = df[numeric_vars]
     table = table.describe().reset_index()
     data_dict= {}
@@ -94,7 +147,8 @@ def describe_data(df, numeric_vars):
 
 
 
-def create_catdata(df, categorical_vars):
+def create_catdata(source, categorical_vars):
+    df = ColumnDataSource.to_df(source)
     cats = []
     for i in range(0, len(categorical_vars)):
         cats.append(list())
@@ -135,7 +189,8 @@ def create_table(datasource, size):
     datatable_ = DataTable(source = datasource, columns = column_titles, width = size, height= 300)
     return datatable_
 
-def create_numerictable(df, numeric_vars):
+def create_numerictable(source, numeric_vars):
+    df = ColumnDataSource.to_df(source)
     corr_coeffs = np.corrcoef(df[numeric_vars], rowvar=0)
     corr_coeffs = pd.DataFrame(corr_coeffs)
     corr_coeffs.columns = numeric_vars
@@ -149,7 +204,8 @@ def create_numerictable(df, numeric_vars):
     return data_source
 
 
-def scatter_data(df, x_widget, y_widget):
+def scatter_data(source, x_widget, y_widget):
+    df = ColumnDataSource.to_df(source)
     table = df
 
     data_dict = {
@@ -166,9 +222,9 @@ def scatter_plot(scatter_data):
     
 
 
-records, p1, data_table = record_line(df)
+records, p1, data_table = record_line(source)
 
-scatter_datasource = scatter_data(df, numeric_vars[0], numeric_vars[1] )  
+scatter_datasource = scatter_data(source, numeric_vars[0], numeric_vars[1] )  
 scatter = scatter_plot(scatter_datasource)
 
 
@@ -176,20 +232,20 @@ p2 = Paragraph(text="P-Values Categorical Var Relationships", width=250)
 p3 = Paragraph(text="Descriptive Statistics", width=250)
 
 
-describe_datasource = describe_data(df, numeric_vars)
+describe_datasource = describe_data(source, numeric_vars)
 describe_datatable = create_table(describe_datasource,900)
 
-describe_catdata = create_catdata(df, categorical_vars)
+describe_catdata = create_catdata(source, categorical_vars)
 cat_datatable = create_table(describe_catdata, 425)
 
-numeric_tabledatasource = create_numerictable(df, numeric_vars)
+numeric_tabledatasource = create_numerictable(source, numeric_vars)
 numeric_datatable = create_table(numeric_tabledatasource, 450 )
 
 
 
 
 def update_scatter(attr, old, new):
-    new_scatter = scatter_data(df, x_widget = x_select.value, y_widget = y_select.value)
+    new_scatter = scatter_data(source, x_widget = x_select.value, y_widget = y_select.value)
     scatter_datasource.data.update(new_scatter.data)
          
 x_select = Select(title="X_Axis", value=numeric_vars[0], options= numeric_vars)
@@ -197,11 +253,6 @@ x_select.on_change('value', update_scatter)
 
 y_select = Select(title="Y_Axis", value=numeric_vars[1], options= numeric_vars)
 y_select.on_change('value', update_scatter)
-
-
-
-
-
 
 
 
@@ -220,16 +271,17 @@ middle_row = row(cat_layout, tabs)
 bottom_row = row(descrip_layout, width = 825)
 
 basic_layout = column(top_row,middle_row, bottom_row)
-    
 
 
 
 
+      
 
-curdoc().add_root(basic_layout)
-curdoc().title = "Store Sales"        
+doc.add_root(basic_layout)
+doc.title = 'EDA Module'
 
-
+thread = Thread(target=blocking_task)
+thread.start()
 
 """
 

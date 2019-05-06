@@ -1,0 +1,4 @@
+Model,Model #,Parameters,Score,Tuning_Type
+['XGBoost'],[3],"[""{'Depth': 5, 'Min Child Weight': 1, 'Num Estimators': 50, 'Num Jobs': -1, 'Learning Rate': 0.2}""]",[],['Manual']
+['CatBoost'],[2],"[""{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}""]",[],['Manual']
+['XGBoost'],[],"[""{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}""]",[],['Manual']

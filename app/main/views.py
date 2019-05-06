@@ -6,6 +6,16 @@ from .forms import file_form
 from ..models import file_path
 from werkzeug import secure_filename
 import os
+from ..file_paths import PATHS
+import pandas as pd
+
+targeting_file = pd.read_csv(PATHS().target_holder)
+
+#TODO create trigger file to read and write to another file to check for the EDA mdoule
+#the file should be a single column with a zero
+#the EDA module should overwrite the zero value with a 1 
+#this will impact how the module figures out what to use for catgorical or numeric values
+
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
@@ -39,8 +49,9 @@ def upload_file():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join('app/Data/app_data.csv'))
+			targeting_file.to_csv(PATHS().target_informer, index=False)
 			flash('File(s) successfully uploaded')
-			return redirect('/EDA')	
+			return redirect('/File-Metadata')	
 
 	
 #form pages
@@ -82,14 +93,19 @@ def bokeh_doc():
 
 
 #Dashboards	
+@main.route('/File-Metadata', methods=['GET'])
+def bkapp_meta():
+    script = server_document('http://localhost:5006/file_metadata')
+    return render_template("embed_eda.html", script=script)
+        
 @main.route('/EDA', methods=['GET'])
 def bkapp_eda():
-    script = server_document('http://localhost:5006/eda')
+    script = server_document('http://localhost:5006/eda_2')
     return render_template("embed_eda.html", script=script)
 
 @main.route('/Model-Selection', methods=['GET'])
 def bkapp_models():
-    script = server_document('http://localhost:5006/model_selection')
+    script = server_document('http://localhost:5006/model_selection_2')
     return render_template("embed_model_selection.html", script=script)
     
 @main.route('/Scenarios', methods=['GET'])
