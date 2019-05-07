@@ -1,4 +1,10 @@
 Model,Model #,Parameters,Score,Tuning_Type
+CatBoost,9,"{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 1, 'Learning Rate': 0.2}","(0.8130555856669677, 0.6754676054334685)",Manual
+CatBoost,8,"{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}",,Manual
+CatBoost,7,"{'Depth': 5, 'Iterations': 100, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}",,Manual
+CatBoost,6,"{'Depth': 15, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}",,Manual
+CatBoost,5,"{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}",,Manual
+CatBoost,4,"{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.6}",,Manual
 ['XGBoost'],[3],"[""{'Depth': 5, 'Min Child Weight': 1, 'Num Estimators': 50, 'Num Jobs': -1, 'Learning Rate': 0.2}""]",[],['Manual']
 ['CatBoost'],[2],"[""{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}""]",[],['Manual']
 ['XGBoost'],[],"[""{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 5, 'Learning Rate': 0.2}""]",[],['Manual']

@@ -100,12 +100,12 @@ def bkapp_meta():
         
 @main.route('/EDA', methods=['GET'])
 def bkapp_eda():
-    script = server_document('http://localhost:5006/eda_2')
+    script = server_document('http://localhost:5006/eda')
     return render_template("embed_eda.html", script=script)
 
 @main.route('/Model-Selection', methods=['GET'])
 def bkapp_models():
-    script = server_document('http://localhost:5006/model_selection_2')
+    script = server_document('http://localhost:5006/model_selection')
     return render_template("embed_model_selection.html", script=script)
     
 @main.route('/Scenarios', methods=['GET'])
