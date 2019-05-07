@@ -100,12 +100,12 @@ def update_variables():
                                             l2_leaf_reg= min_leaf.value, learning_rate= learning_rate.value) 
                 clf.fit(train,y_train)           
                 score = auc_cat(clf, train, test)
-                dump(clf, '/users/home/desktop/catboost_'+str(next_model)+'.joblib') 
+                dump(clf, main_path+'/model_data/catboost_'+str(next_model)+'.joblib') 
         
             elif param_tuning == 'Grid Search':
                 depths = [x for x in max_depth_r.value] 
                 rates = [ x for x in learning_rate_r.value]
-                l2_leaves = [x for x in min_leaf.value]
+                l2_leaves = [x for x in min_leaf_r.value]
                 its = [int(iteration_num2.labels[iteration_num2.active])]
                 
                 
@@ -113,8 +113,8 @@ def update_variables():
                        'learning_rate' : rates,
                        'l2_leaf_reg': l2_leaves,
                        'iterations': its}
-                model = cb.CatBoostClassifier()
-                cb_model = GridSearchCV(model, params, scoring="roc_auc", cv = 3)
+                model_ = cb.CatBoostClassifier()
+                cb_model = GridSearchCV(model_, params, scoring="roc_auc", cv = 3)
                 
                 cb_model.fit(train, y_train)
                 params = cb_model.best_params_
@@ -136,7 +136,7 @@ def update_variables():
                                         n_jobs= -1 , verbose=1,learning_rate=learning_rate.value)
                 clf.fit(train,y_train)           
                 score = auc_xg(clf, train, test)
-                dump(clf, '/users/home/desktop/xgboost_'+str(next_model)+'.joblib') 
+                dump(clf, main_path+'/model_data/xgboost_'+str(next_model)+'.joblib') 
         
             elif param_tuning == 'Grid Search':
                 depths = [x for x in max_depth_r.value] 
@@ -146,16 +146,16 @@ def update_variables():
 
                 
 
-                model = xgb.XGBClassifier()
+                model_ = xgb.XGBClassifier()
                 param_dist = {"max_depth": depths,
                               "min_child_weight" : min_child,
                               "n_estimators": its,
                               "learning_rate": rates}
-                grid_search = GridSearchCV(model, param_grid=param_dist, cv = 3, 
+                grid_search = GridSearchCV(model_, param_grid=param_dist, cv = 3, 
                                    verbose=10, n_jobs=-1)
                 grid_search.fit(train, y_train)
-                grid_search.best_estimator_
-                score = auc_cat(clf, train, test)
+                params = grid_search.best_params_
+                score = auc_cat(grid_search, train, test)
             #elif param_tuning == 'Random Search':
             
             
@@ -167,7 +167,7 @@ def update_variables():
                 #clf = cb.CatBoostClassifier(eval_metric='AUC',depth=cbdepth.value, iterations= int(cbiterations.labels[cbiterations.active]), l2_leaf_reg= cbl2_leaf_reg.value, learning_rate= cblearning_slider.value) 
                 #clf.fit(train,y_train)           
                 #score = auc_gbm(clf, train, test)
-                #dump(clf, '/users/home/desktop/lightgbm_'+str(next_model)+'.joblib') 
+                #dump(clf, main_path+'/model_data/lightgbm_'+str(next_model)+'.joblib') 
         
             #elif param_tuning == 'Grid Search':
             
