@@ -8,6 +8,7 @@ Created on Wed Apr 17 21:55:52 2019
 
 
 import pandas as pd
+import numpy as np
 
 from bokeh.models.widgets import Select, Button, Paragraph, RadioButtonGroup, TextInput, Panel, Tabs, PreText, Slider , RadioGroup, RangeSlider, PreText
 from bokeh.layouts import row, column
@@ -16,7 +17,7 @@ from bokeh.plotting import curdoc
 import catboost as cb
 #import lightgbm as lgb
 import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 
 from sklearn.model_selection import train_test_split
@@ -120,8 +121,38 @@ def update_variables():
                 params = cb_model.best_params_
                 score = auc_cat(cb_model, train, test)
             
-            #elif param_tuning == 'Random Search':
+            elif param_tuning == 'Random Search':
+                depths = [x for x in max_depth_s.value]
+                depths.append(max_depth_s.step) 
+                depths = np.arange(depths[0], depths[1], depths[2])
+                
+                rates = [ x for x in learning_rate_s.value]
+                rates.append(learning_rate_s.step)
+                rates= np.arange(rates[0], rates[1], rates[2])
+                if 0 in rates:
+                    rates = np.delete(rates, 0)
+                
+                min_child = [x for x in min_leaf_s.value]
+                min_child.append(min_leaf_s.step)
+                min_child = np.arange(min_child[0], min_child[1], min_child[2])
+                            
+                its = [int(iteration_num3.labels[iteration_num3.active])]
             
+                param_dist = {'depth': depths,
+                               'learning_rate' : rates,
+                               'l2_leaf_reg': min_child}                
+#                               'iterations': its 
+                
+                
+                n_iters = int(len(depths)*len(rates)*len(min_child)/6)
+                model_ = model_ = cb.CatBoostClassifier()
+                randomized_mse = RandomizedSearchCV(estimator=model_, param_distributions=param_dist, n_iter=n_iters, scoring='neg_mean_squared_error', cv=4, verbose=1)
+                randomized_mse.fit(train, y_train)
+                params = randomized_mse.best_params_
+                score = randomized_mse.best_score_
+            
+                
+                
             
         elif model == 'XGBoost':
             
@@ -149,15 +180,47 @@ def update_variables():
                 model_ = xgb.XGBClassifier()
                 param_dist = {"max_depth": depths,
                               "min_child_weight" : min_child,
-                              "n_estimators": its,
                               "learning_rate": rates}
+#                              "n_estimators": its                
+                
+                
                 grid_search = GridSearchCV(model_, param_grid=param_dist, cv = 3, 
                                    verbose=10, n_jobs=-1)
                 grid_search.fit(train, y_train)
                 params = grid_search.best_params_
                 score = auc_cat(grid_search, train, test)
-            #elif param_tuning == 'Random Search':
             
+
+            elif param_tuning == 'Random Search':
+                depths = [x for x in max_depth_s.value]
+                depths.append(max_depth_s.step) 
+                depths = np.arange(depths[0], depths[1], depths[2])
+                
+                rates = [ x for x in learning_rate_s.value]
+                rates.append(learning_rate_s.step)
+                rates= np.arange(rates[0], rates[1], rates[2])
+                if 0 in rates:
+                    rates = np.delete(rates, 0)
+                    
+                min_child = [x for x in min_leaf_s.value]
+                min_child.append(min_leaf_s.step)
+                min_child = np.arange(min_child[0], min_child[1], min_child[2])
+                            
+                its = [int(iteration_num3.labels[iteration_num3.active])]
+            
+                param_dist = {"max_depth": depths,
+                              "min_child_weight" : min_child,
+                              "n_estimators": its,
+                              "learning_rate": rates}
+                
+                
+                n_iters = int(len(depths)*len(rates)*len(min_child)/6)
+                
+                model_ = xgb.XGBRegressor()
+                randomized_mse = RandomizedSearchCV(estimator=model_, param_distributions=param_dist, n_iter=n_iters, scoring='neg_mean_squared_error', cv=4, verbose=1)
+                randomized_mse.fit(train, y_train)
+                params = randomized_mse.best_params_
+                score = randomized_mse.best_score_
             
         #elif model == 'LightGBM':
             
@@ -239,11 +302,18 @@ max_depth_r = RangeSlider(start=0, end=20, value=(5, 9), step=1, title="Max Dept
 min_leaf_r = RangeSlider(start= 0, end = 10, value = (1, 3), step = 1, title = 'Min Child Weight')
 learning_rate_r = RangeSlider(start=0, end=1, value=(.2, .6), step=.1, title="Learning Rate")
 
+#random
+max_depth_s = RangeSlider(start=0, end=20, value=(0, 20), step=1, title="Max Depth")
+min_leaf_s = RangeSlider(start= 0, end = 10, value = (0, 10), step = 1, title = 'Min Child Weight')
+learning_rate_s = RangeSlider(start=0, end=1, value=(0, 1), step=.1, title="Learning Rate")
+
+
+
 
 #both
 iteration_num1 = RadioGroup( labels=["50", "100", "200", "500"], active=0)
 iteration_num2 = RadioGroup( labels=["50", "100", "200", "500"], active=0)
-
+iteration_num3 = RadioGroup( labels=["50", "100", "200", "500"], active=0)
 
 
 
@@ -254,14 +324,14 @@ lock_params.on_click(update_variables)
 
 col_man = column(learning_rate, max_depth, iteration_num1, min_leaf, width=200)
 col_grid = column(learning_rate_r, max_depth_r, iteration_num2, min_leaf_r, width=200)
-
+col_random = column(learning_rate_s, max_depth_s, min_leaf_s, width=200)
 
 
 tab1 = Panel(child =col_man, title = 'Manual Tuning')
 tab2 = Panel(child =col_grid, title = 'Grid Search Tuning')
+tab3 = Panel(child=col_random, title = 'Random Search')
 
-
-tabs = Tabs(tabs=[tab1, tab2], width=450, height=300)
+tabs = Tabs(tabs=[tab1, tab2, tab3], width=450, height=300)
 
 
 
