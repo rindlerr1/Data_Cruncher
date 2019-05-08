@@ -292,18 +292,18 @@ auc3(clf, train, test)
 #grid_title = PreText(text= "Grid Search")
  
  #manual
-max_depth =  Slider(start=0, end=50, value=5, step=1, title="Max Depth")
+max_depth =  Slider(start=0, end=16, value=5, step=1, title="Max Depth")
 learning_rate = Slider(start=0, end=1, value=.2, step=.1, title="Learning Rate") 
 min_leaf = Slider(start= 0, end = 10, value = 1, step = 1, title = 'Min Leaf Weight')
 
 
 #grid
-max_depth_r = RangeSlider(start=0, end=20, value=(5, 9), step=1, title="Max Depth")
+max_depth_r = RangeSlider(start=0, end=16, value=(5, 9), step=1, title="Max Depth")
 min_leaf_r = RangeSlider(start= 0, end = 10, value = (1, 3), step = 1, title = 'Min Child Weight')
 learning_rate_r = RangeSlider(start=0, end=1, value=(.2, .6), step=.1, title="Learning Rate")
 
 #random
-max_depth_s = RangeSlider(start=0, end=20, value=(0, 20), step=1, title="Max Depth")
+max_depth_s = RangeSlider(start=0, end=16, value=(0, 16), step=1, title="Max Depth")
 min_leaf_s = RangeSlider(start= 0, end = 10, value = (0, 10), step = 1, title = 'Min Child Weight')
 learning_rate_s = RangeSlider(start=0, end=1, value=(0, 1), step=.1, title="Learning Rate")
 
