@@ -8,6 +8,7 @@ Created on Mon Apr 29 21:24:55 2019
 
 import mysql.connector
 import pandas as pd
+import os
 
 from bokeh.layouts import row, column
 from bokeh.plotting import curdoc
