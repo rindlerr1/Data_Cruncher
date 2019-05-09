@@ -8,6 +8,7 @@ from werkzeug import secure_filename
 import os
 from ..file_paths import PATHS
 import pandas as pd
+import os
 
 targeting_file = pd.read_csv(PATHS().target_holder)
 

@@ -8,7 +8,7 @@ Created on Sat May  4 08:52:37 2019
 import os
 
 main_path = os.getcwd()
-main_path = main_path+'/Data/'
+main_path = main_path+'/app/main/Data/'
 
 class PATHS(object):
     
