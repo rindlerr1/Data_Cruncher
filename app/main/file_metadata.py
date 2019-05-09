@@ -15,7 +15,8 @@ from bokeh.models.widgets import Paragraph, Select, CheckboxGroup, Button
 from bokeh.layouts import row, column
 
 
-main_path = '/users/home/desktop/projects/data_cruncher/app/Data/'
+main_path = os.getcwd()
+main_path = main_path+'/Data/'
 
 df = pd.read_csv(main_path+'app_data.csv')
 

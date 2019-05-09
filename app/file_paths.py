@@ -6,7 +6,8 @@ Created on Sat May  4 08:52:37 2019
 @author: Home
 """
 
-main_path = '/users/home/desktop/projects/data_cruncher/app/Data/'
+main_path = os.getcwd()
+main_path = main_path+'/Data/'
 
 class PATHS(object):
     

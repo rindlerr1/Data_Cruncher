@@ -10,6 +10,8 @@ import pandas as pd
 import numpy as np
 from scipy.stats import chi2_contingency
 import time
+import os
+
 
 from bokeh.plotting import figure, curdoc
 from bokeh.models import ColumnDataSource
@@ -20,7 +22,8 @@ from tornado import gen
 from threading import Thread
 from functools import partial
 
-main_path = '/users/home/desktop/projects/data_cruncher/app/Data/'
+main_path = os.getcwd()
+main_path = main_path+'/Data/'
 
 df = pd.read_csv(main_path+'app_data.csv')
 

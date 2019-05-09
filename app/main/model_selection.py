@@ -26,7 +26,8 @@ from sklearn import metrics
 from joblib import dump, load
 
 
-main_path = '/users/home/desktop/projects/data_cruncher/app/Data/'
+main_path = os.getcwd()
+main_path = main_path+'/Data/'
 
 df = pd.read_csv(main_path+'app_data.csv')
 
@@ -222,15 +223,20 @@ def update_variables():
                 params = randomized_mse.best_params_
                 score = randomized_mse.best_score_
             
-        #elif model == 'LightGBM':
+#        elif model == 'LightGBM':
             
-            #if param_tuning == 'Manual':
-                #params = str(str(lblearning_rate.value) +'-'+ str(lbmax_depth.value) +'-'+ str(xgreg_lambda.value) +'-'+ str(lbmin_child_weight.value) +'-'+ str(lbn_estimators.value))
-          
-                #clf = cb.CatBoostClassifier(eval_metric='AUC',depth=cbdepth.value, iterations= int(cbiterations.labels[cbiterations.active]), l2_leaf_reg= cbl2_leaf_reg.value, learning_rate= cblearning_slider.value) 
-                #clf.fit(train,y_train)           
-                #score = auc_gbm(clf, train, test)
-                #dump(clf, main_path+'/model_data/lightgbm_'+str(next_model)+'.joblib') 
+#            if param_tuning == 'Manual':
+ #               params = str({'Depth':max_depth.value, 
+  #                         'Min Child Weight':min_leaf.value,  
+   #                        'Num Estimators':int(iteration_num1.labels[iteration_num1.active]),
+    #                       'Learning Rate':learning_rate.value} )    
+                    
+                    
+     #           gbm = cb.CatBoostClassifier(eval_metric='AUC',depth=max_depth.value, iterations= int(iteration_num1.labels[iteration_num1.active]), 
+      #                                      l2_leaf_reg= min_leaf.value, learning_rate= learning_rate.value) 
+       #         gbm.fit(train,y_train)           
+        #        score = auc_gbm(gbm, train, test)
+         #       dump(gbm, main_path+'/model_data/lightgbm_'+str(next_model)+'.joblib') 
         
             #elif param_tuning == 'Grid Search':
             
