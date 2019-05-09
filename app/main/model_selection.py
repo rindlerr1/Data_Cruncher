@@ -143,10 +143,10 @@ def update_variables():
                                'l2_leaf_reg': min_child}                
 #                               'iterations': its 
                 
-                
+#for cat boost iterations is number of trees                
                 n_iters = int(len(depths)*len(rates)*len(min_child)/6)
                 model_ = model_ = cb.CatBoostClassifier()
-                randomized_mse = RandomizedSearchCV(estimator=model_, param_distributions=param_dist, n_iter=n_iters, scoring='neg_mean_squared_error', cv=4, verbose=1)
+                randomized_mse = RandomizedSearchCV(estimator=model_, param_distributions=param_dist, n_iter=n_iters, scoring='neg_mean_squared_error', verbose=1)
                 randomized_mse.fit(train, y_train)
                 params = randomized_mse.best_params_
                 score = randomized_mse.best_score_
@@ -162,7 +162,7 @@ def update_variables():
                            'Num Estimators':int(iteration_num1.labels[iteration_num1.active]),
                            'Learning Rate':learning_rate.value} )
         
-                        
+ #n_estimators number of trees                       
                 clf = xgb.XGBClassifier(max_depth=max_depth.value, min_child_weight=min_leaf.value,  n_estimators=int(iteration_num1.labels[iteration_num1.active]),
                                         n_jobs= -1 , verbose=1,learning_rate=learning_rate.value)
                 clf.fit(train,y_train)           

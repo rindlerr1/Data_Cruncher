@@ -1,4 +1,5 @@
 Model,Model #,Parameters,Score,Tuning_Type
+CatBoost,13,"{'depth': 5, 'iterations': 50, 'l2_leaf_reg': 3, 'learning_rate': 0.2}","(0.8008638361939174, 0.6886067847237041)",Grid Search
 CatBoost,12,"{'depth': 5, 'iterations': 50, 'l2_leaf_reg': 2, 'learning_rate': 0.3}","(0.8139707317073172, 0.7145295498186474)",Grid Search
 XGBoost,11,"{'Depth': 5, 'Min Child Weight': 1, 'Num Estimators': 50, 'Learning Rate': 0.2}","(0.9363389340560073, 0.7241950252471375)",Manual
 CatBoost,10,"{'Depth': 5, 'Iterations': 50, 'L2 Leaf Reg': 1, 'Learning Rate': 0.2}","(0.8130555856669677, 0.6754676054334685)",Manual
