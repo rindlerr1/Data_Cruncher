@@ -49,7 +49,7 @@ def upload_file():
 			return redirect(request.url)
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
-			file.save(os.path.join('app/Data/app_data.csv'))
+			file.save(os.path.join('app/main/Data/app_data.csv'))
 			targeting_file.to_csv(PATHS().target_informer, index=False)
 			flash('File(s) successfully uploaded')
 			return redirect('/File-Metadata')	
@@ -94,7 +94,7 @@ def bokeh_doc():
 
 
 #Dashboards	
-@main.route('/File-Metadata', methods=['GET'])
+@main.route('/File-Metadata', methods=['GET', 'POST'])
 def bkapp_meta():
     script = server_document('http://localhost:5006/file_metadata')
     return render_template("embed_eda.html", script=script)
@@ -109,8 +109,8 @@ def bkapp_models():
     script = server_document('http://localhost:5006/model_selection')
     return render_template("embed_model_selection.html", script=script)
     
-@main.route('/Scenarios', methods=['GET'])
+@main.route('/Model-Evaluation', methods=['GET'])
 def bkapp_scenarios():
-    script = server_document('http://localhost:5006/sliders')
-    return render_template("embed.html", script=script)
+    script = server_document('http://localhost:5006/model_evaluation')
+    return render_template("embed_model_evaluation.html", script=script)
     

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}I-COM{% endblock %}
+
+{% block page_content %}
+<h2>Welcome to the Model Evaluation Module!</h2>
+<h3>Here you will find:</h3>
+<div>-Trended Training and Test Prediction Scores</div>
+<div>-Details for each model</div>
+<div>-The SHAP Values for the selected model</div>
+<div>-An ability to push the chosen model to the Simulation Module</div>
+
+{{ script|safe }}
+{% endblock %}

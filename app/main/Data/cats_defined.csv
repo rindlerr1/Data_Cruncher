@@ -1,5 +1,9 @@
 Categorical_Variables
-AIRLINE
-FLIGHT_NUMBER
-DESTINATION_AIRPORT
-ORIGIN_AIRPORT
+Geography
+Product
+Day
+Day_of_Year
+Weekday
+Week_of_Year
+Month
+Year

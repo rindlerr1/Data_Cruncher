@@ -12,7 +12,7 @@ import os
 
 from bokeh.plotting import curdoc
 
-from bokeh.models.widgets import Paragraph, Select, CheckboxGroup, Button
+from bokeh.models.widgets import Paragraph, Select, CheckboxGroup, Button, PreText
 from bokeh.layouts import row, column
 
 
@@ -43,7 +43,9 @@ elif target_file['Orig_Clean'][0] == 1:
 
 
 def define_variables():
+    flash_comm1.text ="Reading in Data"
     df = pd.read_csv(main_path+'app_data.csv')
+    
 
     cat_vars = [categorical_group.labels[i] for i in categorical_group.active]
     num_vars = [numeric_group.labels[i] for i in numeric_group.active]
@@ -72,6 +74,7 @@ def define_variables():
     
     df = df[list_of_vars]
     df.to_csv(main_path+'app_data_clean.csv',index=False)
+    flash_comm2.text ="Complete proceed to EDA"
 
     
 
@@ -95,11 +98,17 @@ date_group = Select(title = 'Select Date Variable', value=variables[0], options 
 lock_vars = Button(label="Define Variable Types", button_type="primary")
 lock_vars.on_click(define_variables)
 
+flash_comm1 = PreText(text="")
+flash_comm2 = PreText(text="")
+
+
+
+
 cat_sel = column(p1, categorical_group)
 num_sel = column(p2, numeric_group)
-dep_sel = column(p3, dependent_group)
-date_sel = column(p4, date_group)
-selection_dash = row(cat_sel, num_sel,dep_sel, date_sel, lock_vars)
+dep_sel = column(p3, dependent_group, p4, date_group)
+#date_sel = column(p4, date_group)
+selection_dash = row(cat_sel, num_sel,dep_sel, lock_vars)
 
 curdoc().add_root(selection_dash)
 curdoc().title = "File Metadata"  

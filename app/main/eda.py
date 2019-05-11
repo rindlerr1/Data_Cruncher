@@ -92,6 +92,7 @@ def datetime(x):
 def record_line(source):
     df = ColumnDataSource.to_df(source)
     table = df.groupby(['Date'])['Date'].count().rename('Record Counts').reset_index()
+    table['Date'] = pd.to_datetime(table['Date'])
     sd = np.std(table['Record Counts'])
     mean = np.mean(table['Record Counts'])
     
