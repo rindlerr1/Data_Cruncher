@@ -26,6 +26,7 @@ test  = test.drop(['y'], axis=1)
 import pandas as pd
 import numpy as np
 import os
+import numpy as np
 
 from bokeh.models.widgets import Select, Button, Paragraph, RadioButtonGroup, Panel, Tabs,  Slider , RadioGroup, RangeSlider, PreText, TextInput
 from bokeh.layouts import row, column
@@ -124,7 +125,7 @@ def update_variables():
                 
                 y_pred = catboost.predict(test)
                 mse = metrics.mean_squared_error(y_test, y_pred)
-                
+                rmse = np.sqrt(np.abs(mse))
                 
                 score = (metrics.r2_score(y_train, catboost.predict(train)),metrics.r2_score(y_test, catboost.predict(test)))
                                 
@@ -164,6 +165,7 @@ def update_variables():
                                 
                 params = grid_search.best_params_
                 mse = grid_search.best_score_               
+                rmse = np.sqrt(np.abs(mse))
                 
                 best_catboost = cb.CatBoostRegressor(eval_metric='RMSE',
                                                      one_hot_max_size=31,
@@ -258,6 +260,7 @@ def update_variables():
                 
                 y_pred = xgboost.predict(test)
                 mse = metrics.mean_squared_error(y_test, y_pred)
+                rmse = np.sqrt(np.abs(mse))
                 
                 score = (xgboost.score(train, y_train),xgboost.score(test, y_test) )
                 
@@ -301,6 +304,7 @@ def update_variables():
                     
                 params = grid_search.best_params_
                 mse = grid_search.best_score_  
+                rmse = np.sqrt(np.abs(mse))
                 
                 best_xgboost = xgb.XGBRegressor(max_depth=params['max_depth'],                                           
                                                 min_child_weight= params['min_child_weight'],  
@@ -392,7 +396,7 @@ def update_variables():
                 score = (best_xgboost.score(train, y_train), best_xgboost.score(test, y_test))
                 mse = randomized_mse.best_score_
                 #out = pd.Series(best_xgboost.predict(train)) 
-                
+                rmse = np.sqrt(np.abs(mse))
                 
                 dump(best_xgboost, main_path+'/model_data/XGBoost_'+str(next_model)+'.joblib') 
                                 
@@ -423,6 +427,7 @@ def update_variables():
                 
                 y_pred = lightgbm.predict(test)
                 mse = metrics.mean_squared_error(y_test, y_pred)
+                rmse = np.sqrt(np.abs(mse))
                 
                 score = (lightgbm.score(train, y_train), lightgbm.score(test, y_test))
 
@@ -466,6 +471,7 @@ def update_variables():
                 
                 params = grid_search.best_params_
                 mse = grid_search.best_score_  
+                rmse = np.sqrt(np.abs(mse))
                 
                 best_lightgbm = lgb.LGBMRegressor(max_depth=params['max_depth'],                                           
                                                 min_child_weight= params['min_child_weight'],  
@@ -541,6 +547,7 @@ def update_variables():
                 
                 params = randomized_mse.best_params_
                 mse = randomized_mse.best_score_
+                rmse = np.sqrt(np.abs(mse))
                 
                 best_lightgbm = lgb.LGBMRegressor(max_depth=params['max_depth'],                                           
                                                 min_child_weight= params['min_child_weight'],  
@@ -569,7 +576,7 @@ def update_variables():
                         'Tuning_Type':str(param_tuning),
                         'Parameters':str(params),
                         'Score':str(score),
-                        'MSE': str(mse)}}
+                        'RMSE': str(rmse)}}
         model_data = pd.DataFrame.from_dict(data_dict).transpose()
         
         model_data = model_data.append(past_models)

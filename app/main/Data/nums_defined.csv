@@ -1,4 +1,5 @@
 Numeric_Variables
+Year
 Programmatic_Impression
 Programmatic_Click
 Search_Impression
@@ -7,21 +8,10 @@ Search_Conversions
 Search Avg Position
 Catalogue_volume
 Google_search_Index
-Drive_nb_trx
-Drive_nb_hhd
-Drive_CA
-Drive_qte
-Drive_CA_promo
-Drive_avtg_amt
-Store_nb_trx
-Store_nb_trx_P
-Store_nb_hhd
-Store_CA
-Store_CA_P
-Store_qte
-Store_qte_P
-Store_CA_promo
-Store_CA_promo_P
-Store_avtg_amt
-Store_avtg_amt_P
-Avg_index
+Total_media
+TV
+Radio
+Press
+Out_of_home
+Digital
+Search

@@ -1,4 +1,5 @@
-MSE,Model,Model #,Parameters,Score,Tuning_Type
-70014.91045279386,XGBoost,3,"{'Depth': 5, 'Min Child Weight': 1, 'Num Estimators': 200, 'Learning Rate': 0.1, 'Reg Lambda': 0.1, 'colsample_bytree': 0.30000000000000004, 'Random State': 42}","(0.9999454699013881, 0.9691527232908047)",Manual
-70014.91045279386,XGBoost,2,"{'Depth': 5, 'Min Child Weight': 1, 'Num Estimators': 200, 'Learning Rate': 0.1, 'Reg Lambda': 0.1, 'colsample_bytree': 0.30000000000000004, 'Random State': 42}","(0.9999454699013881, 0.9691527232908047)",Manual
--165691.63401786002,LightGBM,1,"{'reg_lambda': 0.9, 'num_boost_round': 100, 'n_estimators': 175, 'min_child_weight': 6, 'max_depth': 5, 'learning_rate': 0.30000000000000004, 'colsample_bytree': 0.6, 'Random State': 42}","(0.9922952646786575, 0.9193131768989027)",Random Search
+Model,Model #,Parameters,RMSE,Score,Tuning_Type
+XGBoost,4,"{'reg_lambda': 0.4, 'num_boost_round': 100, 'n_estimators': 250, 'min_child_weight': 2, 'max_depth': 6, 'learning_rate': 0.1, 'colsample_bytree': 0.8, 'Random State': 42}",514.0898572672844,"(0.9976516278183731, 0.8726171599186329)",Random Search
+LightGBM,3,"{'reg_lambda': 0.6, 'num_boost_round': 100, 'n_estimators': 475, 'min_child_weight': 9, 'max_depth': 12, 'learning_rate': 0.2, 'colsample_bytree': 0.9, 'Random State': 42}",869.379665535433,"(0.9893209152183308, 0.9486254369108591)",Random Search
+LightGBM,2,"{'reg_lambda': 0.30000000000000004, 'num_boost_round': 100, 'n_estimators': 475, 'min_child_weight': 8, 'max_depth': 14, 'learning_rate': 0.30000000000000004, 'colsample_bytree': 0.8, 'Random State': 42}",401.65558565701485,"(0.999462743620926, 0.8926305379099799)",Random Search
+LightGBM,5,"{'Random State': 42, 'colsample_bytree': 0.6, 'learning_rate': 0.2, 'max_depth': 9, 'min_child_weight': 1, 'n_estimators': 200, 'reg_lambda': 0.6}",425.2688569,"(0.9888884990478143, 0.9223243089801942)",Grid Search

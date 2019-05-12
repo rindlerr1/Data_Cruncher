@@ -9,23 +9,26 @@ Created on Thu May  9 14:55:44 2019
 import pandas as pd
 import time
 import os
-
+from ast import literal_eval
+import numpy as np
 
 from bokeh.plotting import figure, curdoc
 from bokeh.models import ColumnDataSource
-from bokeh.models.widgets import DataTable, TableColumn, Paragraph, RadioGroup, Tabs, Panel, Select
-from bokeh.layouts import row, column
-
+from bokeh.models.widgets import DataTable, TableColumn, Paragraph, RadioGroup, Tabs, Panel, Select, PreText
+from bokeh.layouts import row, column, gridplot
+from sklearn.model_selection import train_test_split
 from tornado import gen
 from threading import Thread
 from functools import partial
-
+import shap
 from joblib import dump, load
+from sklearn.preprocessing import RobustScaler
+
 
 main_path = os.getcwd()
-main_path = main_path+'/Data/model_data/'
+main_path = main_path+'/Data/'
 
-df = pd.read_csv(main_path+'model_performance.csv')
+df = pd.read_csv(main_path+'model_data/model_performance.csv')
 
 
 
@@ -45,7 +48,7 @@ def blocking_task():
         # do some blocking computation
         time.sleep(30)
         
-        df = pd.read_csv(main_path+'model_performance.csv')
+        df = pd.read_csv(main_path+'model_data/model_performance.csv')
 
         # but update the document from callback
         doc.add_next_tick_callback(partial(update, df))
@@ -138,12 +141,22 @@ def model_select(source):
 
 
 def update_simulation_model(attr, old, new):
-    scenario_1 = pd.read_csv(main_path+'scenario_1.csv')    
+    df = ColumnDataSource.to_df(source)
+    selected = model_selection.value
     
-    selected = model_selection.labels[model_selection.active]
+    split = selected.split('_')
+    
+    table = df[df.Model == split[0]]
+    table = table[table['Model #']== int(split[1])]
+    
+    mini_table = pd.DataFrame(literal_eval(table['Parameters'][0]),index= [0])                       
+                        
+    printed.text = str(mini_table.transpose())
+
+    scenario_1 = pd.read_csv(main_path+'scenario_1.csv')    
         
     model = load(main_path+selected+'.joblib') 
-    model.best_param_
+
    
     prediction_1 = pd.Series(model.predict(scenario_1))
     prediction_1.to_csv(main_path+'prediction_1.csv', index=False)
@@ -151,6 +164,7 @@ def update_simulation_model(attr, old, new):
     dump(model, main_path+'simulation_model'+'.joblib') 
     
     #shap.image_url(url=['/Data/model_data/'+selected+'_shap.png'],x=x_range[0], y=y_range[1],w=x_range[1]-x_range[0],h=y_range[1]-y_range[0])
+
 
 
 #df = ColumnDataSource.to_df(source)
@@ -167,7 +181,7 @@ def update_simulation_model(attr, old, new):
 #shap = figure(x_range=x_range, y_range=y_range)
 #shap.image_url(url=['/Data/model_data/'+labels[0]+'_shap.png'],x=x_range[0], y=y_range[1],w=x_range[1]-x_range[0],h=y_range[1]-y_range[0])
 
-
+printed = PreText(text="")
 
 table_title = Paragraph(text="All Models")
 
@@ -188,11 +202,13 @@ top_row = row(line_graph)
 mid_row = row(model_selection)
 
 
-#tab1 = Panel(child = shap ,title = 'Shap Values')
-tab2 = Panel(child = datatable, title = 'Scatter Plot')
 
 
-bottom_tabs = Tabs(tabs=[ tab2], width=900, height=450)  
+tab2 = Panel(child = printed ,title = 'Specific Model')
+tab1 = Panel(child = datatable, title = 'All View')
+
+
+bottom_tabs = Tabs(tabs=[ tab1, tab2], width=900, height=450)  
 
 
 bottom_row = column(mid_row, bottom_tabs)
