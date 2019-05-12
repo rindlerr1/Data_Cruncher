@@ -72,7 +72,7 @@ def define_variables():
     list_of_vars.extend(num_vars)
     list_of_vars.extend(cat_vars)
     
-    df = df[list_of_vars]
+#    df = df[list_of_vars]
     df.to_csv(main_path+'app_data_clean.csv',index=False)
     flash_comm2.text ="Complete proceed to EDA"
 

@@ -13,7 +13,7 @@ import os
 
 from bokeh.plotting import figure, curdoc
 from bokeh.models import ColumnDataSource
-from bokeh.models.widgets import DataTable, TableColumn, Paragraph, RadioGroup, Tabs, Panel
+from bokeh.models.widgets import DataTable, TableColumn, Paragraph, RadioGroup, Tabs, Panel, Select
 from bokeh.layouts import row, column
 
 from tornado import gen
@@ -105,7 +105,7 @@ def model_table(source):
 
     source = ColumnDataSource(data=df.to_dict(orient='list'))
     
-    datatable = DataTable(source = source, columns = column_titles, width = 650)
+    datatable = DataTable(source = source, columns = column_titles, width = 900)
     
     #TODO ORDER COLUMNS
     
@@ -132,15 +132,22 @@ def model_select(source):
       
     labels = [x for x in df.Combo]
 
-    model_selection = RadioGroup( labels=labels, active=0)
+    model_selection = Select(title = 'Select Top Model', value=labels[0], options = labels, width=200)
 
     return model_selection
 
 
 def update_simulation_model(attr, old, new):
+    scenario_1 = pd.read_csv(main_path+'scenario_1.csv')    
+    
     selected = model_selection.labels[model_selection.active]
         
     model = load(main_path+selected+'.joblib') 
+    model.best_param_
+   
+    prediction_1 = pd.Series(model.predict(scenario_1))
+    prediction_1.to_csv(main_path+'prediction_1.csv', index=False)
+    
     dump(model, main_path+'simulation_model'+'.joblib') 
     
     #shap.image_url(url=['/Data/model_data/'+selected+'_shap.png'],x=x_range[0], y=y_range[1],w=x_range[1]-x_range[0],h=y_range[1]-y_range[0])
@@ -168,7 +175,7 @@ model_select_title = Paragraph(text="Select Model for Simulator")
 
 model_selection = model_select(source)
 #must be after model_selection
-model_selection.on_change('active', update_simulation_model)
+model_selection.on_change('value', update_simulation_model)
 
 
 line_graph = accuracy(source)
@@ -178,17 +185,17 @@ datatable = model_table(source)
 
 top_row = row(line_graph)
 
+mid_row = row(model_selection)
 
-selection_col = column(model_select_title, model_selection)
 
 #tab1 = Panel(child = shap ,title = 'Shap Values')
 tab2 = Panel(child = datatable, title = 'Scatter Plot')
 
 
-bottom_tabs = Tabs(tabs=[ tab2], width=700, height=450)  
+bottom_tabs = Tabs(tabs=[ tab2], width=900, height=450)  
 
 
-bottom_row = row(bottom_tabs, selection_col)
+bottom_row = column(mid_row, bottom_tabs)
 
 dash = column(top_row, bottom_row)
 
@@ -199,4 +206,17 @@ doc.title = 'Model Evaluation'
 thread = Thread(target=blocking_task)
 thread.start()
 
+
+"""
+
+   
+    empty_df =pd.DataFrame()
+    predicts = []
+    for i in range(0, len(scenario_1)):
+        empty_df = scenario_1[i:i+1]
+        predicts.append(model.predict(empty_df))
+        
+        
+    scenario_1['Predicted'] = scenario_1.apply(lambda x: model.predict(x))
+"""
     

@@ -1,24 +1,27 @@
 Numeric_Variables
-Traditional TV GRP
-Efficiency TV GRP
-Digital Impressions
-Weekly Shipment
-Facebook Impressions
-Twitter Impressions
-Seasonality
-Magazine Impressions
-Gmail Clicks
-YouTube Display Clicks
-Emails Delivered
-Pinterest Impressions
-Traditional TV Spend
-Efficiency TV Spend
-Digital Spend
-Facebook Spend
-Twitter Spend
-Magazine Spend
-Gmail Spend
-YouTube Display Spend
-Pinterest Spend
-Search Clicks
-Search Spend
+Programmatic_Impression
+Programmatic_Click
+Search_Impression
+Search_Click
+Search_Conversions
+Search Avg Position
+Catalogue_volume
+Google_search_Index
+Drive_nb_trx
+Drive_nb_hhd
+Drive_CA
+Drive_qte
+Drive_CA_promo
+Drive_avtg_amt
+Store_nb_trx
+Store_nb_trx_P
+Store_nb_hhd
+Store_CA
+Store_CA_P
+Store_qte
+Store_qte_P
+Store_CA_promo
+Store_CA_promo_P
+Store_avtg_amt
+Store_avtg_amt_P
+Avg_index

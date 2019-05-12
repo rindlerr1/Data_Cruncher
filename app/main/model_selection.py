@@ -4,9 +4,24 @@
 Created on Wed Apr 17 21:55:52 2019
 
 @author: Home
-"""
-  
 
+
+df[item] = df[item].astype("category").cat.codes +1
+train, test, y_train, y_test = train_test_split(df.drop([dep_var], axis=1), df[dep_var],
+                                                            random_state=10, test_size=0.25)
+
+for i in df.columns:
+    df[i] = df[i].astype(float)
+
+train = df[df.index <=103]   
+test = df[df.index >103]    
+
+y_train = train['y'] 
+train = train.drop(['y'],axis=1)   
+
+y_test = test['y']
+test  = test.drop(['y'], axis=1)   
+"""
 
 import pandas as pd
 import numpy as np
@@ -15,8 +30,6 @@ import os
 from bokeh.models.widgets import Select, Button, Paragraph, RadioButtonGroup, Panel, Tabs,  Slider , RadioGroup, RangeSlider, PreText, TextInput
 from bokeh.layouts import row, column
 from bokeh.plotting import curdoc
-import matplotlib.pyplot as plt
-
 
 import catboost as cb
 import lightgbm as lgb
@@ -27,7 +40,6 @@ from sklearn import metrics
 from sklearn.externals.joblib import parallel_backend
 
 from joblib import dump
-import shap
 
 main_path = os.getcwd()
 main_path = main_path+'/Data/'
@@ -110,6 +122,10 @@ def update_variables():
                 
                 catboost.fit(train,y_train, cat_features = cat_feature_index, silent=True) 
                 
+                y_pred = catboost.predict(test)
+                mse = metrics.mean_squared_error(y_test, y_pred)
+                
+                
                 score = (metrics.r2_score(y_train, catboost.predict(train)),metrics.r2_score(y_test, catboost.predict(test)))
                                 
                 
@@ -147,7 +163,7 @@ def update_variables():
                 
                                 
                 params = grid_search.best_params_
-                                
+                mse = grid_search.best_score_               
                 
                 best_catboost = cb.CatBoostRegressor(eval_metric='RMSE',
                                                      one_hot_max_size=31,
@@ -238,10 +254,18 @@ def update_variables():
                                            learning_rate=learning_rate.value)
 
                 
-                xgboost.fit(train,y_train)  
+                xgboost.fit(train,y_train) 
+                
+                y_pred = xgboost.predict(test)
+                mse = metrics.mean_squared_error(y_test, y_pred)
                 
                 score = (xgboost.score(train, y_train),xgboost.score(test, y_test) )
-                                                            
+                
+                #out = pd.DataFrame(pd.Series(xgboost.predict(test)).rename('Predicted'))
+                #out.to_csv('/Users/Home/out_pred.csv',index=False)
+                #y_test.to_csv('/Users/Home/tested.csv',index=False)
+                #test.to_csv('/Users/Home/Desktop/input_tested.csv', index=False)                
+                                           
                 dump(xgboost, main_path+'/model_data/XGBoost_'+str(next_model)+'.joblib') 
       
            
@@ -276,6 +300,7 @@ def update_variables():
                     grid_search.fit(train, y_train)
                     
                 params = grid_search.best_params_
+                mse = grid_search.best_score_  
                 
                 best_xgboost = xgb.XGBRegressor(max_depth=params['max_depth'],                                           
                                                 min_child_weight= params['min_child_weight'],  
@@ -291,8 +316,7 @@ def update_variables():
                 best_xgboost.fit(train, y_train)
                 
                 score = (best_xgboost.score(train, y_train), best_xgboost.score(test, y_test))
-                                
-                
+                                                
                 dump(best_xgboost, main_path+'/model_data/XGBoost_'+str(next_model)+'.joblib') 
  
                 
@@ -366,7 +390,9 @@ def update_variables():
                 best_xgboost.fit(train, y_train)
                 
                 score = (best_xgboost.score(train, y_train), best_xgboost.score(test, y_test))
-                                
+                mse = randomized_mse.best_score_
+                #out = pd.Series(best_xgboost.predict(train)) 
+                
                 
                 dump(best_xgboost, main_path+'/model_data/XGBoost_'+str(next_model)+'.joblib') 
                                 
@@ -394,6 +420,9 @@ def update_variables():
                                              silent=False)                
                 
                 lightgbm.fit(train, y_train)
+                
+                y_pred = lightgbm.predict(test)
+                mse = metrics.mean_squared_error(y_test, y_pred)
                 
                 score = (lightgbm.score(train, y_train), lightgbm.score(test, y_test))
 
@@ -436,6 +465,7 @@ def update_variables():
                     grid_search.fit(train,y_train)
                 
                 params = grid_search.best_params_
+                mse = grid_search.best_score_  
                 
                 best_lightgbm = lgb.LGBMRegressor(max_depth=params['max_depth'],                                           
                                                 min_child_weight= params['min_child_weight'],  
@@ -510,6 +540,7 @@ def update_variables():
                     randomized_mse.fit(train, y_train)
                 
                 params = randomized_mse.best_params_
+                mse = randomized_mse.best_score_
                 
                 best_lightgbm = lgb.LGBMRegressor(max_depth=params['max_depth'],                                           
                                                 min_child_weight= params['min_child_weight'],  
@@ -525,7 +556,7 @@ def update_variables():
                 best_lightgbm.fit(train, y_train)
                 
                 score = (best_lightgbm.score(train, y_train), best_lightgbm.score(test, y_test))
-                    
+                   
 
                 dump(best_lightgbm, main_path+'/model_data/LightGBM_'+str(next_model)+'.joblib') 
     
@@ -537,7 +568,8 @@ def update_variables():
                         'Model #':str(next_model),
                         'Tuning_Type':str(param_tuning),
                         'Parameters':str(params),
-                        'Score':str(score)}}
+                        'Score':str(score),
+                        'MSE': str(mse)}}
         model_data = pd.DataFrame.from_dict(data_dict).transpose()
         
         model_data = model_data.append(past_models)
